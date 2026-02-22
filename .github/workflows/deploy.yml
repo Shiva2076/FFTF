@@ -1,0 +1,85 @@
+name: Deploy InnoFarms Frontend to Azure Container Apps
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚀 Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: 🔑 Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # Get secrets from Key Vault
+      - name: 🔒 Fetch Key Vault secrets
+        run: |
+          echo "NEXT_PUBLIC_BASE_URL=$(az keyvault secret show \
+            --vault-name ${{ secrets.KV_NAME }} \
+            --name backendbaseurl --query value -o tsv)" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_PAYPALCLIENTID=$(az keyvault secret show \
+            --vault-name ${{ secrets.KV_NAME }} \
+            --name sandboxpaypalclientid --query value -o tsv)" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_PAYPALCLIENTSECRET=$(az keyvault secret show \
+            --vault-name ${{ secrets.KV_NAME }} \
+            --name sandboxpaypalclientsecret --query value -o tsv)" >> $GITHUB_ENV
+
+      - name: 🔑 Log in to Azure Container Registry (ACR)
+        run: az acr login --name ${{ secrets.ACR_NAME }}
+
+      # Build with build-time variables
+      - name: 📦 Build and Push Docker Image
+        run: |
+          docker build \
+            --build-arg NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL \
+            --build-arg NEXT_PUBLIC_PAYPALCLIENTID=$NEXT_PUBLIC_PAYPALCLIENTID \
+            --build-arg NEXT_PUBLIC_PAYPALCLIENTSECRET=$NEXT_PUBLIC_PAYPALCLIENTSECRET \
+            -t ${{ secrets.ACR_NAME }}.azurecr.io/innofarms-frontendv2:${{ github.sha }} .
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/innofarms-frontendv2:${{ github.sha }}
+
+      # Deploy with runtime variables
+      - name: 🚀 Deploy to Azure Container Apps
+        run: |
+          # Check if app exists
+          if az containerapp show --name innofarms-frontend-appv2 --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} &>/dev/null; then
+            # Update existing app
+            az containerapp update \
+              --name innofarms-frontend-appv2 \
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+              --image ${{ secrets.ACR_NAME }}.azurecr.io/innofarms-frontendv2:${{ github.sha }} \
+              --set-env-vars \
+                NEXT_PUBLIC_BASE_URL="$NEXT_PUBLIC_BASE_URL" \
+                NEXT_PUBLIC_PAYPALCLIENTID="$NEXT_PUBLIC_PAYPALCLIENTID" \
+                NEXT_PUBLIC_PAYPALCLIENTSECRET="$NEXT_PUBLIC_PAYPALCLIENTSECRET"
+          else
+            # Create new app
+            az containerapp create \
+              --name innofarms-frontend-appv2 \
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+              --environment ${{ secrets.AZURE_CONTAINERAPPS_ENV }} \
+              --image ${{ secrets.ACR_NAME }}.azurecr.io/innofarms-frontendv2:${{ github.sha }} \
+              --ingress external \
+              --target-port 3000 \
+              --min-replicas 1 \
+              --max-replicas 3 \
+              --registry-server ${{ secrets.ACR_NAME }}.azurecr.io \
+              --registry-identity /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ secrets.AZURE_RESOURCE_GROUP }}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${{ secrets.CONTAINER_USER }} \
+              --set-env-vars \
+                NEXT_PUBLIC_BASE_URL="$NEXT_PUBLIC_BASE_URL" \
+                NEXT_PUBLIC_PAYPALCLIENTID="$NEXT_PUBLIC_PAYPALCLIENTID" \
+                NEXT_PUBLIC_PAYPALCLIENTSECRET="$NEXT_PUBLIC_PAYPALCLIENTSECRET"
+          fi
+
+      - name: ✅ Verify Deployment
+        run: |
+          echo "Verifying environment variables..."
+          az containerapp show \
+            --name innofarms-frontend-appv2 \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --query "configuration.template.containers[0].env" -o table
