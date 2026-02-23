@@ -6,6 +6,7 @@ import CropGrowthTimeline from '@/components/dashboard/Growcycle/Cropgrowthtimel
 import TaskList from '@/components/dashboard/Growcycle/Tasklist';
 import CompletedCycleSummary from '@/components/dashboard/Growcycle/Completecyclesummary';
 import EnvironmentalMonitoring from '@/components/dashboard/Growcycle/Environmentmonitoring';
+import { GROW_CYCLE_ENV_MONITORING } from '@/constant1';
 import CropHealthStatus from '@/components/dashboard/Growcycle/Crophealthstatus';
 // Add props type
 interface GrowCycleOverviewProps {
@@ -68,7 +69,7 @@ const GrowCycleOverview: React.FC<GrowCycleOverviewProps> = ({ growcycleapidata,
       </Box>
       <Grid container spacing={2} sx={{ mt: 2 }}>
         <Grid item xs={12} md={8}>
-          <EnvironmentalMonitoring environmentalMonitoringData={growcycleapidata?.environmentalMonitoringData} iot={iot} />
+          <EnvironmentalMonitoring environmentalMonitoringData={(growcycleapidata?.environmentalMonitoringData?.length > 0) ? growcycleapidata.environmentalMonitoringData : GROW_CYCLE_ENV_MONITORING} iot={iot} />
         </Grid>
         <Grid item xs={12} md={4}>
           <CompletedCycleSummary completedCycleSummaryData={growcycleapidata?.completedCycleSummaryData} iot={iot} />

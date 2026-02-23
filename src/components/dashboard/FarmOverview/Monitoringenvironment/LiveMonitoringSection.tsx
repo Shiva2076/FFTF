@@ -212,7 +212,7 @@ const LiveMonitoringSection: React.FC<LiveMonitoringSectionProps> = ({
   isLoading = false,
   ai = true,
 }) => {
-  const availableKeys = Object.keys(liveMonitoring);
+  const availableKeys = Object.keys(liveMonitoring ?? {});
   const defaultKey = availableKeys.find(key => key === 'rack_2_shelf_2') || availableKeys[0] || '';
   const [selectedKey, setSelectedKey] = useState(defaultKey);
   const [selectedDate, setSelectedDate] = useState<string>('');
@@ -223,7 +223,7 @@ const LiveMonitoringSection: React.FC<LiveMonitoringSectionProps> = ({
   const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
   const [aiImageLoading, setAiImageLoading] = useState(true);
   
-  const currentData = liveMonitoring[selectedKey];
+  const currentData = liveMonitoring?.[selectedKey];
   
   useEffect(() => {
     if (currentData?.availableDates && currentData.availableDates.length > 0) {

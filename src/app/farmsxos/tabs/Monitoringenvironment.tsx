@@ -83,7 +83,7 @@ interface Props {
 const MonitoringEnvironment = ({ data, farmId, selectedCropCycle, iot = true, ai = true }: MonitoringEnvironmentProps) => {
   const dispatch = useDispatch();
   const sensorDataTopCard=data?.topCards;
-  const liveMonitoring=data?.liveMonitoring;
+  const liveMonitoring=data?.liveMonitoring ?? undefined;
   const sensorData=data?.sensorData;
   const irrigationScheduleData = data?.irrigationScheduleData || { irrigationSchedule: [] };
   const irrigationSystemInfo=data?.irrigationSystemInfo;

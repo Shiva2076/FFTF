@@ -15,6 +15,7 @@ import FarmRegisterModal from '@/components/dashboard/Farm/FarmRegister';
 import Farmregisterprogress from '@/components/dashboard/Farm/Farmregisterprogress';
 import GrowCycleOverview from '@/app/farmsxos/tabs/GrowCycleOverview';
 import { api } from '@/constants';
+import { STATIC_DASHBOARD_DATA, STATIC_USER, STATIC_FARM } from '@/constant1';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ActiveCropInsightsSection from '@/components/dashboard/Activecropinsights/ActiveCropInsightsSection';
 import RackShelfAllocator from '@/components/dashboard/FarmOverview/RackShelfAllocator';
@@ -44,8 +45,10 @@ const Maindashboard: React.FC = () => {
   const skipAutoFetchRef = useRef(false);
   const router = useRouter();
   const dispatch = useDispatch();
-  const userInfo = useSelector((state: any) => state.auth.userInfo);
-  const isAuthenticated = Boolean(userInfo?.user_id);
+  const _reduxUserInfo = useSelector((state: any) => state.auth.userInfo);
+  // Fall back to static demo user so the dashboard is always visible
+  const userInfo = _reduxUserInfo ?? STATIC_USER;
+  const isAuthenticated = true;
   const [loading, setLoading] = useState<boolean>(false);
   const [panelLoading, setPanelLoading] = useState<boolean>(false);
   const [initialLoading, setInitialLoading] = useState<boolean>(true);
@@ -168,29 +171,12 @@ const Maindashboard: React.FC = () => {
   );
 
   useEffect(() => {
-    const fetchFarms = async () => {
-      try {
-        setInitialLoading(true);
-        const res = await api.get('/api/farm/userfarms');
-        const allFarms = res.data;
-        setUserFarms(allFarms);
-
-        if (allFarms.length > 0) {
-          const firstFarm = allFarms[0];
-          setSelectedFarm(firstFarm);
-          updateFarmLocationMeta(firstFarm.country, dispatch);
-        }
-      } catch (error) {
-        console.error('Error fetching user farms or dashboard data:', error);
-      } finally {
-        setInitialLoading(false);
-      }
-    };
-
-    if (isAuthenticated) {
-      fetchFarms();
-    }
-  }, [isAuthenticated]);
+    // Static demo — no API call needed for farms
+    setUserFarms([STATIC_FARM]);
+    setSelectedFarm(STATIC_FARM);
+    updateFarmLocationMeta(STATIC_FARM.country, dispatch);
+    setInitialLoading(false);
+  }, []);
 
   useEffect(() => {
     if (activeMainTab !== 'FarmOverview') return;
@@ -201,21 +187,17 @@ const Maindashboard: React.FC = () => {
         setLoading(true);
         setLockActiveCropInsightTab(true);
         setLockGrowCycleTab(true);
-        const response = await api.get(
-          `/api/xos/dashboard?farmId=${selectedFarm.farm_id}&type=farmoverview`
-        );
-        const data = response.data.data;
+        // Static data from constant1 — no API call needed for now
         const combinedData = {
-          ...data,
+          ...STATIC_DASHBOARD_DATA,
           farm: selectedFarm,
         };
-        // console.log("FULL API RESPONSE of Farm Overview:", combinedData);
         setDashboardData(combinedData);
-        setShowTimeline(data?.showTimeline ?? false);
-        setLockActiveCropInsightTab(data?.lockActiveCropInsightTab ?? false);
-        setLockGrowCycleTab(data?.lockGrowCycleTab ?? false);
+        setShowTimeline(STATIC_DASHBOARD_DATA.showTimeline);
+        setLockActiveCropInsightTab(STATIC_DASHBOARD_DATA.lockActiveCropInsightTab);
+        setLockGrowCycleTab(STATIC_DASHBOARD_DATA.lockGrowCycleTab);
       } catch (error) {
-        console.error('Error fetching dashboard data for selected farm:', error);
+        console.error('Error loading dashboard data:', error);
       } finally {
         setLoading(false);
       }
@@ -962,24 +944,11 @@ const Maindashboard: React.FC = () => {
           });
 
           setDashboardData({
+            ...STATIC_DASHBOARD_DATA,
             showTimeline,
             timelineData,
             farm,
           });
-
-          try {
-            const dashboardRes = await api.get(
-              `/api/xos/dashboard?farmId=${farm.farm_id}&type=farmoverview`
-            );
-            const fetchedData = dashboardRes.data.data;
-            setDashboardData({
-              ...fetchedData,
-              farm,
-            });
-            setShowTimeline(fetchedData?.showTimeline || false);
-          } catch (err) {
-            console.error("Error loading dashboard for new farm:", err);
-          }
         }}
       />
       <RackShelfAllocator

@@ -29,6 +29,18 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // In development (no basePath) all hardcoded /apps/* image/asset paths 404
+  // because the files live at the public root. This rewrite tunnels them to
+  // the correct location so icons work locally without touching every <Image>.
+  async rewrites() {
+    if (isProd) return [];
+    return [
+      {
+        source: '/apps/:path*',
+        destination: '/:path*',
+      },
+    ];
+  },
   async redirects() {
     return [
       {
