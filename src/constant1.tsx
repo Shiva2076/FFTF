@@ -826,3 +826,247 @@ export const GROW_CYCLE_ENV_MONITORING = [
     ],
   },
 ];
+
+// ─── Grow Cycle Static Dashboard Data ────────────────────────────────────────
+
+export const STATIC_GROW_CYCLE_DATA = {
+  growCycleTopCardsData: {
+    activeCyclesProfit: '12 %',
+    harvestReadiness: '18 %',
+    aiPredictedYield: '43.5 kg',
+    activeCropHealth: '82 %',
+  },
+
+  cropGrowthStagesTimelineData: {
+    lowestDate: '2026-02-13',
+    highestDate: '2026-04-07',
+    timePeriod: 54,
+    timeline: [
+      // Cycle 5012 – Arugula Cultivated (Farm 149) – SEEDING
+      {
+        cycleId: 5012,
+        growthCycle: 90,
+        cropName: 'arugula',
+        cropVariety: 'cultivated',
+        cropType: 'Leafy-Greens',
+        status: 'INITIALIZED',
+        seeding:     { startDate: '2026-02-13', endDate: '2026-03-01' },
+        transplant:  { startDate: '2026-03-01', endDate: '2026-03-14' },
+        vegetative:  { startDate: '2026-03-14', endDate: '2026-03-21' },
+        harvest:     { startDate: '2026-03-21', endDate: '2026-03-28' },
+      },
+      // Cycle 5013 – Basil Sweet (Farm 149) – PENDING
+      {
+        cycleId: 5013,
+        growthCycle: 91,
+        cropName: 'basil',
+        cropVariety: 'sweet',
+        cropType: 'Leafy-Greens',
+        status: 'PENDING',
+        seeding:     { startDate: '2026-03-06', endDate: '2026-03-28' },
+        transplant:  { startDate: '2026-03-28', endDate: '2026-04-05' },
+        vegetative:  { startDate: '2026-04-05', endDate: '2026-04-09' },
+        harvest:     { startDate: '2026-04-09', endDate: '2026-04-15' },
+      },
+      // Cycle 5014 – Basil Genovese (Farm 148) – SEEDING
+      {
+        cycleId: 5014,
+        growthCycle: 92,
+        cropName: 'basil',
+        cropVariety: 'genovese',
+        cropType: 'Leafy-Greens',
+        status: 'INITIALIZED',
+        seeding:     { startDate: '2026-02-17', endDate: '2026-03-11' },
+        transplant:  { startDate: '2026-03-11', endDate: '2026-03-20' },
+        vegetative:  { startDate: '2026-03-20', endDate: '2026-03-23' },
+        harvest:     { startDate: '2026-03-23', endDate: '2026-03-29' },
+      },
+      // Cycle 5015 – Arugula General (Farm 148) – SEEDING
+      {
+        cycleId: 5015,
+        growthCycle: 93,
+        cropName: 'arugula',
+        cropVariety: 'general',
+        cropType: 'Leafy-Greens',
+        status: 'INITIALIZED',
+        seeding:     { startDate: '2026-02-17', endDate: '2026-03-05' },
+        transplant:  { startDate: '2026-03-05', endDate: '2026-03-19' },
+        vegetative:  { startDate: '2026-03-19', endDate: '2026-03-25' },
+        harvest:     { startDate: '2026-03-25', endDate: '2026-04-01' },
+      },
+      // Cycle 5017 – Arugula Wild (Farm 148) – SEEDING
+      {
+        cycleId: 5017,
+        growthCycle: 94,
+        cropName: 'arugula',
+        cropVariety: 'wild',
+        cropType: 'Leafy-Greens',
+        status: 'INITIALIZED',
+        seeding:     { startDate: '2026-02-18', endDate: '2026-03-06' },
+        transplant:  { startDate: '2026-03-06', endDate: '2026-03-20' },
+        vegetative:  { startDate: '2026-03-20', endDate: '2026-03-26' },
+        harvest:     { startDate: '2026-03-26', endDate: '2026-04-02' },
+      },
+      // Cycle 5018 – Basil Sweet (Farm 148) – SEEDING
+      {
+        cycleId: 5018,
+        growthCycle: 95,
+        cropName: 'basil',
+        cropVariety: 'sweet',
+        cropType: 'Leafy-Greens',
+        status: 'INITIALIZED',
+        seeding:     { startDate: '2026-02-18', endDate: '2026-03-12' },
+        transplant:  { startDate: '2026-03-12', endDate: '2026-03-22' },
+        vegetative:  { startDate: '2026-03-22', endDate: '2026-03-24' },
+        harvest:     { startDate: '2026-03-24', endDate: '2026-03-30' },
+      },
+      // Cycle 5019 – Coriander Indian (Farm 148) – SEEDING
+      {
+        cycleId: 5019,
+        growthCycle: 96,
+        cropName: 'coriander',
+        cropVariety: 'indian',
+        cropType: 'Leafy-Greens',
+        status: 'INITIALIZED',
+        seeding:     { startDate: '2026-02-18', endDate: '2026-03-10' },
+        transplant:  { startDate: '2026-03-10', endDate: '2026-03-24' },
+        vegetative:  { startDate: '2026-03-24', endDate: '2026-03-31' },
+        harvest:     { startDate: '2026-03-31', endDate: '2026-04-07' },
+      },
+    ],
+  },
+
+  taskListData: [
+    {
+      cycle_id: 5012,
+      crop_name: 'arugula',
+      crop_variety: 'cultivated',
+      status: 'INITIALIZED',
+      shelves_allocated: 1,
+      tasks: [
+        {
+          task_id: 1,
+          description: 'Monitor seed germination. Check moisture levels and ensure adequate lighting.',
+          notification_description: 'Confirm germination check is complete for Arugula Cultivated (5012).',
+          notification_frequency: 'daily',
+        },
+      ],
+      parameters: {
+        stage_duration_min: 7, stage_duration_max: 14,
+        ppfd_min: 150, ppfd_max: 250,
+        photo_period_min: 14, photo_period_max: 18,
+        temperature_min: 18, temperature_max: 24,
+        humidity_min: 60, humidity_max: 75,
+        co2_min: 400, co2_max: 600,
+        ec_min: 1.2, ec_max: 2.0,
+        do_min: 6, do_max: 8,
+        ph_min: 6.0, ph_max: 6.5,
+      },
+    },
+    {
+      cycle_id: 5014,
+      crop_name: 'basil',
+      crop_variety: 'genovese',
+      status: 'INITIALIZED',
+      shelves_allocated: 1,
+      tasks: [
+        {
+          task_id: 1,
+          description: 'Check basil seedlings. Ensure nutrient solution EC is within range.',
+          notification_description: 'Confirm seedling check completed for Basil Genovese (5014).',
+          notification_frequency: 'daily',
+        },
+      ],
+      parameters: {
+        stage_duration_min: 10, stage_duration_max: 21,
+        ppfd_min: 200, ppfd_max: 300,
+        photo_period_min: 16, photo_period_max: 18,
+        temperature_min: 20, temperature_max: 26,
+        humidity_min: 55, humidity_max: 70,
+        co2_min: 400, co2_max: 600,
+        ec_min: 1.4, ec_max: 2.2,
+        do_min: 6, do_max: 8,
+        ph_min: 5.8, ph_max: 6.3,
+      },
+    },
+    {
+      cycle_id: 5019,
+      crop_name: 'coriander',
+      crop_variety: 'indian',
+      status: 'INITIALIZED',
+      shelves_allocated: 1,
+      tasks: [
+        {
+          task_id: 1,
+          description: 'Inspect coriander tray. Adjust lighting height if seedlings are stretching.',
+          notification_description: 'Confirm inspection done for Coriander Indian (5019).',
+          notification_frequency: 'daily',
+        },
+      ],
+      parameters: {
+        stage_duration_min: 7, stage_duration_max: 14,
+        ppfd_min: 120, ppfd_max: 200,
+        photo_period_min: 12, photo_period_max: 16,
+        temperature_min: 17, temperature_max: 23,
+        humidity_min: 55, humidity_max: 70,
+        co2_min: 400, co2_max: 550,
+        ec_min: 1.0, ec_max: 1.8,
+        do_min: 6, do_max: 8,
+        ph_min: 6.0, ph_max: 6.5,
+      },
+    },
+  ],
+
+  cropHealthStatusData: [
+    { cycle_id: 5012, crop_name: 'arugula',   crop_variety: 'cultivated', growth_cycle: 90, health_score: 85.2, status: 'INITIALIZED' },
+    { cycle_id: 5014, crop_name: 'basil',      crop_variety: 'genovese',  growth_cycle: 92, health_score: 80.7, status: 'INITIALIZED' },
+    { cycle_id: 5015, crop_name: 'arugula',   crop_variety: 'general',    growth_cycle: 93, health_score: 78.9, status: 'INITIALIZED' },
+    { cycle_id: 5017, crop_name: 'arugula',   crop_variety: 'wild',       growth_cycle: 94, health_score: 76.4, status: 'INITIALIZED' },
+    { cycle_id: 5018, crop_name: 'basil',      crop_variety: 'sweet',     growth_cycle: 95, health_score: 82.1, status: 'INITIALIZED' },
+    { cycle_id: 5019, crop_name: 'coriander', crop_variety: 'indian',     growth_cycle: 96, health_score: 74.6, status: 'INITIALIZED' },
+    { cycle_id: 5013, crop_name: 'basil',      crop_variety: 'sweet',     growth_cycle: 91, health_score: null, status: 'PENDING'      },
+  ],
+
+  completedCycleSummaryData: [] as any[],
+
+  environmentalMonitoringData: GROW_CYCLE_ENV_MONITORING,
+};
+
+// ─── Active Crop Insights Static Data ────────────────────────────────────────
+
+export const STATIC_ACTIVE_CROP_INSIGHT_DATA = {
+  growCyclesList: [
+    {
+      growth_cycle: 90,
+      cropCycles: [
+        { cycle_id: 5012, crop_name: 'arugula', crop_variety: 'cultivated', crop_type: 'Leafy-Greens', status: 'INITIALIZED' },
+        { cycle_id: 5013, crop_name: 'basil',   crop_variety: 'sweet',      crop_type: 'Leafy-Greens', status: 'PENDING'     },
+      ],
+    },
+    {
+      growth_cycle: 92,
+      cropCycles: [
+        { cycle_id: 5014, crop_name: 'basil',    crop_variety: 'genovese', crop_type: 'Leafy-Greens', status: 'INITIALIZED' },
+        { cycle_id: 5015, crop_name: 'arugula',  crop_variety: 'general',  crop_type: 'Leafy-Greens', status: 'INITIALIZED' },
+        { cycle_id: 5017, crop_name: 'arugula',  crop_variety: 'wild',     crop_type: 'Leafy-Greens', status: 'INITIALIZED' },
+        { cycle_id: 5018, crop_name: 'basil',    crop_variety: 'sweet',    crop_type: 'Leafy-Greens', status: 'INITIALIZED' },
+        { cycle_id: 5019, crop_name: 'coriander',crop_variety: 'indian',   crop_type: 'Leafy-Greens', status: 'INITIALIZED' },
+      ],
+    },
+  ],
+  chosenCycle: {
+    cycle_id: 5014,
+    crop_name: 'basil',
+    crop_variety: 'genovese',
+    crop_type: 'Leafy-Greens',
+    growth_cycle: 92,
+    status: 'INITIALIZED',
+  },
+  overviewData: {
+    environmentMetrics: [],
+    keyMilestones: null,
+    rackShelfData: null,
+  },
+  realtimeActivityData: {},
+};
+

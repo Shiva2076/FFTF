@@ -15,7 +15,7 @@ import FarmRegisterModal from '@/components/dashboard/Farm/FarmRegister';
 import Farmregisterprogress from '@/components/dashboard/Farm/Farmregisterprogress';
 import GrowCycleOverview from '@/app/farmsxos/tabs/GrowCycleOverview';
 import { api } from '@/constants';
-import { STATIC_DASHBOARD_DATA, STATIC_USER, STATIC_FARM } from '@/constant1';
+import { STATIC_DASHBOARD_DATA, STATIC_USER, STATIC_FARM, STATIC_GROW_CYCLE_DATA, STATIC_ACTIVE_CROP_INSIGHT_DATA } from '@/constant1';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ActiveCropInsightsSection from '@/components/dashboard/Activecropinsights/ActiveCropInsightsSection';
 import RackShelfAllocator from '@/components/dashboard/FarmOverview/RackShelfAllocator';
@@ -207,20 +207,8 @@ const Maindashboard: React.FC = () => {
   
   useEffect(() => {
     if (!selectedFarm?.farm_id || activeMainTab !== 'GrowCycle') return;
-
-    const fetchGrowCycleData = async () => {
-      try {
-        setLoading(true);
-        const { data } = await api.get(`/api/xos/dashboard?farmId=${selectedFarm.farm_id}&type=growcycle&growcycle=${growcycleValue}`);
-        setGrowcycleapidata(data?.data);
-      } catch (error) {
-        console.error('Error fetching Grow Cycle data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchGrowCycleData();
+    // Static data — no API call needed
+    setGrowcycleapidata(STATIC_GROW_CYCLE_DATA);
   }, [selectedFarm?.farm_id, growcycleValue, activeMainTab]);
 
   type ActiveInsight = {
@@ -256,40 +244,36 @@ const Maindashboard: React.FC = () => {
   });
 
  const fetchInsights = async (cycleId?: number) => {
-  try {
-    const isLoadingFromTabChange = cycleId === undefined;
-    isLoadingFromTabChange ? setLoading(true) : setPanelLoading(true);
-    
-    // ✅ First, fetch the list to find cycle 770
-    let url = `/api/xos/dashboard?farmId=${selectedFarm?.farm_id}&type=activecropinsights`;
-    if (cycleId) url += `&cropcycle=${cycleId}`;
-    
-    const res = await api.get(url);
-    const { growCyclesList, chosenCycle, overviewData, realtimeActivityData } = res.data?.data ?? {};
+  // Static data — no API call needed
+  const { growCyclesList, chosenCycle, overviewData, realtimeActivityData } = STATIC_ACTIVE_CROP_INSIGHT_DATA;
 
-    setActiveInsightData({
-      list: growCyclesList,
-      chosenCycle,
-      overviewData,
-      realtimeActivityData
-    });
-
-    // Set selected cycle based on API response
-    if (chosenCycle) {
-      setSelectedGrowthCycle(chosenCycle.growth_cycle);
-      setSelectedCropCycle(chosenCycle.cycle_id);
-    } else if (growCyclesList && growCyclesList.length > 0) {
-      // Fallback to first cycle if chosenCycle is not provided
-      const firstGrowCycle = growCyclesList[0];
-      setSelectedGrowthCycle(firstGrowCycle.growth_cycle);
-      const firstCrop = firstGrowCycle.cropCycles[0];
-      if (firstCrop) setSelectedCropCycle(firstCrop.cycle_id);
+  // If a specific cycleId is requested, find it in the static list
+  let resolvedChosenCycle: typeof chosenCycle | null = chosenCycle;
+  if (cycleId !== undefined) {
+    for (const growthGroup of growCyclesList) {
+      const found = growthGroup.cropCycles.find((c: any) => c.cycle_id === cycleId);
+      if (found) {
+        resolvedChosenCycle = { ...found, growth_cycle: growthGroup.growth_cycle };
+        break;
+      }
     }
-  } catch (err) {
-    console.error('Error loading Active Crop Insights', err);
-  } finally {
-    setLoading(false);
-    setPanelLoading(false);
+  }
+
+  setActiveInsightData({
+    list: growCyclesList,
+    chosenCycle: resolvedChosenCycle,
+    overviewData,
+    realtimeActivityData,
+  });
+
+  if (resolvedChosenCycle) {
+    setSelectedGrowthCycle(resolvedChosenCycle.growth_cycle);
+    setSelectedCropCycle(resolvedChosenCycle.cycle_id);
+  } else if (growCyclesList.length > 0) {
+    const firstGrowCycle = growCyclesList[0];
+    setSelectedGrowthCycle(firstGrowCycle.growth_cycle);
+    const firstCrop = firstGrowCycle.cropCycles[0];
+    if (firstCrop) setSelectedCropCycle(firstCrop.cycle_id);
   }
 };
 
